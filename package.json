@@ -1,0 +1,18 @@
+{
+  "name": "pixel-art-game-base",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel --no-cache index.html"
+  },
+  "devDependencies": {
+    "@types/mainloop.js": "^1.0.5",
+    "parcel": "^2.0.0-alpha.3.2",
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "mainloop.js": "^1.0.4",
+    "resource-loader": "^4.0.0-rc2"
+  }
+}
