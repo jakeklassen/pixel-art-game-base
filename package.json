@@ -1,9 +1,9 @@
 {
   "name": "pixel-art-game-base",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "build": "parcel build index.html",
     "start": "parcel --no-cache index.html"
   },
   "devDependencies": {
