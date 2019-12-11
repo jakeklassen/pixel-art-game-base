@@ -43,16 +43,27 @@ loader.add(bunnyUrl).load((loader, resources) => {
     throw new Error(`Could not load ${bunnyUrl}`);
   }
 
-  const bunny = bunnyResource.data as HTMLImageElement;
+  const bunny = {
+    pos: {
+      x: bunnyResource.data.width / 2,
+      y: canvas.height / 2 - bunnyResource.data.height / 2,
+    },
+    vel: {
+      x: 20,
+      y: 0,
+    },
+    sprite: bunnyResource.data as HTMLImageElement,
+  };
 
-  MainLoop.setUpdate((dt: number) => {})
+  MainLoop.setUpdate((dt: number) => {
+    dt = dt / 1000;
+
+    bunny.pos.x += bunny.vel.x * dt;
+    bunny.pos.y += bunny.vel.y * dt;
+  })
     .setDraw((interpolation: number) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(
-        bunny,
-        canvas.width / 2 - bunny.width / 2,
-        canvas.height / 2 - bunny.height / 2,
-      );
+      ctx.drawImage(bunny.sprite, bunny.pos.x, bunny.pos.y);
     })
     .start();
 });
