@@ -17,6 +17,15 @@ ctx.imageSmoothingEnabled = false;
 canvas.style.width = `${GAME_WIDTH}px`;
 canvas.style.height = `${GAME_HEIGHT}px`;
 
+export const IDENTITY_MATRIX: DOMMatrix2DInit = {
+  a: 1,
+  b: 0,
+  c: 0,
+  d: 1,
+  e: 0,
+  f: 0,
+};
+
 const resize = () => {
   // Scale canvas to fit window while maintaining 16x9
   const { innerWidth, innerHeight } = window;
@@ -48,8 +57,12 @@ loader.add(bunnyUrl).load((loader, resources) => {
       x: bunnyResource.data.width / 2,
       y: canvas.height / 2 - bunnyResource.data.height / 2,
     },
+    lastPos: {
+      x: bunnyResource.data.width / 2,
+      y: canvas.height / 2 - bunnyResource.data.height / 2,
+    },
     vel: {
-      x: 20,
+      x: 30,
       y: 0,
     },
     sprite: bunnyResource.data as HTMLImageElement,
@@ -58,12 +71,25 @@ loader.add(bunnyUrl).load((loader, resources) => {
   MainLoop.setUpdate((dt: number) => {
     dt = dt / 1000;
 
+    bunny.lastPos.x = bunny.pos.x;
+    bunny.lastPos.y = bunny.pos.y;
     bunny.pos.x += bunny.vel.x * dt;
     bunny.pos.y += bunny.vel.y * dt;
   })
-    .setDraw((interpolation: number) => {
+    .setDraw((interpolationPercentage: number) => {
+      const x =
+        bunny.lastPos.x +
+        (bunny.pos.x - bunny.lastPos.x) * interpolationPercentage;
+      const y =
+        bunny.lastPos.y +
+        (bunny.pos.y - bunny.lastPos.y) * interpolationPercentage;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(bunny.sprite, bunny.pos.x, bunny.pos.y);
+      ctx.translate(x, y);
+
+      ctx.drawImage(bunny.sprite, 0, 0);
+
+      ctx.setTransform(IDENTITY_MATRIX);
     })
     .start();
 });
