@@ -1,10 +1,13 @@
-import MainLoop from 'mainloop.js';
+import * as dat from 'dat.gui';
 import { Loader } from 'resource-loader';
 import bunnyUrl from './assets/bunny.png';
+import visitorFontUrl from './assets/fonts/visitor/visitor1.ttf';
 import { getResolution } from './lib/screen';
 
 const GAME_WIDTH = 384;
 const GAME_HEIGHT = 216;
+const TARGET_FPS = 60;
+const STEP = 1 / TARGET_FPS;
 
 const loader = new Loader();
 
@@ -45,51 +48,78 @@ resize();
 
 window.addEventListener('resize', resize);
 
-loader.add(bunnyUrl).load((loader, resources) => {
-  const bunnyResource = resources[bunnyUrl];
+loader.add(bunnyUrl).load(async (loader, resources) => {
+  const font = new FontFace('Visitor', `url(${visitorFontUrl})`);
+  const visitorFont = await font.load();
+  document.fonts.add(visitorFont);
 
-  if (bunnyResource == null) {
+  const sprite = resources[bunnyUrl];
+
+  if (sprite == null) {
     throw new Error(`Could not load ${bunnyUrl}`);
   }
 
-  const bunny = {
+  const player = {
     pos: {
-      x: bunnyResource.data.width / 2,
-      y: canvas.height / 2 - bunnyResource.data.height / 2,
+      x: sprite.data.width / 2,
+      y: canvas.height / 2 - sprite.data.height / 2,
     },
     lastPos: {
-      x: bunnyResource.data.width / 2,
-      y: canvas.height / 2 - bunnyResource.data.height / 2,
+      x: sprite.data.width / 2,
+      y: canvas.height / 2 - sprite.data.height / 2,
     },
     vel: {
-      x: 30,
+      x: 20,
       y: 0,
     },
-    sprite: bunnyResource.data as HTMLImageElement,
+    dir: {
+      x: 1,
+      y: 0,
+    },
+    sprite: sprite.data as HTMLImageElement,
   };
 
-  MainLoop.setUpdate((dt: number) => {
-    dt = dt / 1000;
+  const gui = new dat.GUI();
 
-    bunny.lastPos.x = bunny.pos.x;
-    bunny.lastPos.y = bunny.pos.y;
-    bunny.pos.x += bunny.vel.x * dt;
-    bunny.pos.y += bunny.vel.y * dt;
-  })
-    .setDraw((interpolationPercentage: number) => {
-      const x =
-        bunny.lastPos.x +
-        (bunny.pos.x - bunny.lastPos.x) * interpolationPercentage;
-      const y =
-        bunny.lastPos.y +
-        (bunny.pos.y - bunny.lastPos.y) * interpolationPercentage;
+  gui.add(player.vel, 'x', 0, 200, 1);
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.translate(x, y);
+  let dt = 0;
+  let last = performance.now();
 
-      ctx.drawImage(bunny.sprite, 0, 0);
+  function frame(hrt: DOMHighResTimeStamp) {
+    // One additional note is that requestAnimationFrame might pause if our browser
+    // loses focus, resulting in a very, very large dt after it resumes.
+    // We can workaround this by limiting the delta to one second:
+    dt = dt + Math.min(1, (hrt - last) / 1000);
 
-      ctx.setTransform(IDENTITY_MATRIX);
-    })
-    .start();
+    while (dt > STEP) {
+      dt -= STEP;
+
+      player.lastPos.x = player.pos.x;
+      player.lastPos.y = player.pos.y;
+      player.pos.x += player.vel.x * STEP * player.dir.x;
+      player.pos.y += player.vel.y * STEP * player.dir.y;
+
+      if (player.pos.x + player.sprite.width >= GAME_WIDTH) {
+        player.pos.x = GAME_WIDTH - player.sprite.width;
+        player.dir.x *= -1;
+      } else if (player.pos.x <= 0) {
+        player.pos.x = 0;
+        player.dir.x *= -1;
+      }
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.translate(player.pos.x | 0, player.pos.y | 0);
+
+    ctx.drawImage(player.sprite, 0, 0);
+
+    ctx.setTransform(IDENTITY_MATRIX);
+
+    last = hrt;
+
+    requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
 });

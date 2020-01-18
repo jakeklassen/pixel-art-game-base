@@ -7,11 +7,13 @@
     "start": "parcel --no-cache index.html"
   },
   "devDependencies": {
+    "@types/dat.gui": "^0.7.5",
     "@types/mainloop.js": "^1.0.5",
     "parcel": "^2.0.0-alpha.3.2",
     "typescript": "^3.7.4"
   },
   "dependencies": {
+    "dat.gui": "^0.7.6",
     "mainloop.js": "^1.0.4",
     "resource-loader": "^4.0.0-rc3"
   }
