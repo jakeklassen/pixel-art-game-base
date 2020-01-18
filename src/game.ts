@@ -1,3 +1,4 @@
+import 'regenerator-runtime/runtime';
 import * as dat from 'dat.gui';
 import { Loader } from 'resource-loader';
 import bunnyUrl from './assets/bunny.png';
