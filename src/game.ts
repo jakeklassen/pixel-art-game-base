@@ -62,7 +62,7 @@ loader.add(bunnyUrl).load((loader, resources) => {
       y: canvas.height / 2 - bunnyResource.data.height / 2,
     },
     vel: {
-      x: 30,
+      x: 20,
       y: 0,
     },
     sprite: bunnyResource.data as HTMLImageElement,
@@ -85,7 +85,7 @@ loader.add(bunnyUrl).load((loader, resources) => {
         (bunny.pos.y - bunny.lastPos.y) * interpolationPercentage;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.translate(x, y);
+      ctx.translate(x | 0, y | 0);
 
       ctx.drawImage(bunny.sprite, 0, 0);
 
