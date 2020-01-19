@@ -57,6 +57,10 @@ loader.add(bunnyUrl).load((loader, resources) => {
       x: bunnyResource.data.width / 2,
       y: canvas.height / 2 - bunnyResource.data.height / 2,
     },
+    dir: {
+      x: 1,
+      y: 0,
+    },
     lastPos: {
       x: bunnyResource.data.width / 2,
       y: canvas.height / 2 - bunnyResource.data.height / 2,
@@ -69,12 +73,18 @@ loader.add(bunnyUrl).load((loader, resources) => {
   };
 
   MainLoop.setUpdate((dt: number) => {
-    dt = dt / 1000;
-
     bunny.lastPos.x = bunny.pos.x;
     bunny.lastPos.y = bunny.pos.y;
-    bunny.pos.x += bunny.vel.x * dt;
-    bunny.pos.y += bunny.vel.y * dt;
+    bunny.pos.x += (bunny.vel.x / dt) * bunny.dir.x;
+    bunny.pos.y += (bunny.vel.y / dt) * bunny.dir.y;
+
+    if (bunny.pos.x + bunny.sprite.width >= GAME_WIDTH) {
+      bunny.pos.x = GAME_WIDTH - bunny.sprite.width;
+      bunny.dir.x *= -1;
+    } else if (bunny.pos.x <= 0) {
+      bunny.pos.x = 0;
+      bunny.dir.x *= -1;
+    }
   })
     .setDraw((interpolationPercentage: number) => {
       const x =
@@ -85,6 +95,19 @@ loader.add(bunnyUrl).load((loader, resources) => {
         (bunny.pos.y - bunny.lastPos.y) * interpolationPercentage;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = 'red';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(20 - 0.5, 0);
+      ctx.lineTo(20 - 0.5, GAME_HEIGHT);
+      ctx.moveTo(40 - 0.5, 0);
+      ctx.lineTo(40 - 0.5, GAME_HEIGHT);
+      ctx.moveTo(60 - 0.5, 0);
+      ctx.lineTo(60 - 0.5, GAME_HEIGHT);
+      ctx.moveTo(80 - 0.5, 0);
+      ctx.lineTo(80 - 0.5, GAME_HEIGHT);
+      ctx.stroke();
+
       ctx.translate(x | 0, y | 0);
 
       ctx.drawImage(bunny.sprite, 0, 0);
