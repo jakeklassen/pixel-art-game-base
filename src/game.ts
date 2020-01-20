@@ -1,4 +1,3 @@
-import MainLoop from 'mainloop.js';
 import { Loader } from 'resource-loader';
 import bunnyUrl from './assets/bunny.png';
 import { getResolution } from './lib/screen';
@@ -72,7 +71,11 @@ loader.add(bunnyUrl).load((loader, resources) => {
     sprite: bunnyResource.data as HTMLImageElement,
   };
 
-  MainLoop.setUpdate((dt: number) => {
+  let last = performance.now();
+
+  function frame(hrt: DOMHighResTimeStamp) {
+    const dt = hrt - last;
+
     bunny.lastPos.x = bunny.pos.x;
     bunny.lastPos.y = bunny.pos.y;
     bunny.pos.x += (bunny.vel.x / dt) * bunny.dir.x;
@@ -85,34 +88,31 @@ loader.add(bunnyUrl).load((loader, resources) => {
       bunny.pos.x = 0;
       bunny.dir.x *= -1;
     }
-  })
-    .setDraw((interpolationPercentage: number) => {
-      const x =
-        bunny.lastPos.x +
-        (bunny.pos.x - bunny.lastPos.x) * interpolationPercentage;
-      const y =
-        bunny.lastPos.y +
-        (bunny.pos.y - bunny.lastPos.y) * interpolationPercentage;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = 'red';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(20 - 0.5, 0);
-      ctx.lineTo(20 - 0.5, GAME_HEIGHT);
-      ctx.moveTo(40 - 0.5, 0);
-      ctx.lineTo(40 - 0.5, GAME_HEIGHT);
-      ctx.moveTo(60 - 0.5, 0);
-      ctx.lineTo(60 - 0.5, GAME_HEIGHT);
-      ctx.moveTo(80 - 0.5, 0);
-      ctx.lineTo(80 - 0.5, GAME_HEIGHT);
-      ctx.stroke();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(20 - 0.5, 0);
+    ctx.lineTo(20 - 0.5, GAME_HEIGHT);
+    ctx.moveTo(40 - 0.5, 0);
+    ctx.lineTo(40 - 0.5, GAME_HEIGHT);
+    ctx.moveTo(60 - 0.5, 0);
+    ctx.lineTo(60 - 0.5, GAME_HEIGHT);
+    ctx.moveTo(80 - 0.5, 0);
+    ctx.lineTo(80 - 0.5, GAME_HEIGHT);
+    ctx.stroke();
 
-      ctx.translate(x | 0, y | 0);
+    ctx.translate(bunny.pos.x | 0, bunny.pos.y | 0);
 
-      ctx.drawImage(bunny.sprite, 0, 0);
+    ctx.drawImage(bunny.sprite, 0, 0);
 
-      ctx.setTransform(IDENTITY_MATRIX);
-    })
-    .start();
+    ctx.setTransform(IDENTITY_MATRIX);
+
+    last = hrt;
+
+    requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
 });
