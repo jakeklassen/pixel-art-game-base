@@ -53,7 +53,7 @@ loader.add(bunnyUrl).load((loader, resources) => {
 
   const bunny = {
     pos: {
-      x: bunnyResource.data.width / 2,
+      x: 0,
       y: canvas.height / 2 - bunnyResource.data.height / 2,
     },
     dir: {
@@ -61,7 +61,7 @@ loader.add(bunnyUrl).load((loader, resources) => {
       y: 0,
     },
     lastPos: {
-      x: bunnyResource.data.width / 2,
+      x: 0,
       y: canvas.height / 2 - bunnyResource.data.height / 2,
     },
     vel: {
@@ -74,12 +74,12 @@ loader.add(bunnyUrl).load((loader, resources) => {
   let last = performance.now();
 
   function frame(hrt: DOMHighResTimeStamp) {
-    const dt = hrt - last;
+    const dt = (hrt - last) / 1000;
 
     bunny.lastPos.x = bunny.pos.x;
     bunny.lastPos.y = bunny.pos.y;
-    bunny.pos.x += (bunny.vel.x / dt) * bunny.dir.x;
-    bunny.pos.y += (bunny.vel.y / dt) * bunny.dir.y;
+    bunny.pos.x += bunny.vel.x * dt * bunny.dir.x;
+    bunny.pos.y += bunny.vel.y * dt * bunny.dir.y;
 
     if (bunny.pos.x + bunny.sprite.width >= GAME_WIDTH) {
       bunny.pos.x = GAME_WIDTH - bunny.sprite.width;
