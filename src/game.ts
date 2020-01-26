@@ -1,4 +1,3 @@
-import MainLoop from 'mainloop.js';
 import { Loader } from 'resource-loader';
 import bunnyUrl from './assets/bunny.png';
 import { getResolution } from './lib/screen';
