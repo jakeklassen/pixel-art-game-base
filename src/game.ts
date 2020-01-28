@@ -68,8 +68,8 @@ loader.add(bunnyUrl).load((loader, resources) => {
     sprite: bunnyResource.data as HTMLImageElement,
   };
 
-  const FRAME_RATE = 1000 / 144;
-  const STEP = FRAME_RATE / 1000;
+  let FRAME_RATE = 1000 / 60;
+  let STEP = FRAME_RATE / 1000;
   let lastFrame = 0;
   let startTime: number;
 
@@ -108,18 +108,6 @@ loader.add(bunnyUrl).load((loader, resources) => {
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(20 - 0.5, 0);
-    ctx.lineTo(20 - 0.5, GAME_HEIGHT);
-    ctx.moveTo(40 - 0.5, 0);
-    ctx.lineTo(40 - 0.5, GAME_HEIGHT);
-    ctx.moveTo(60 - 0.5, 0);
-    ctx.lineTo(60 - 0.5, GAME_HEIGHT);
-    ctx.moveTo(80 - 0.5, 0);
-    ctx.lineTo(80 - 0.5, GAME_HEIGHT);
-    ctx.stroke();
 
     ctx.translate(Math.round(bunny.pos.x), Math.round(bunny.pos.y));
     // ctx.translate(bunny.pos.x, bunny.pos.y);
