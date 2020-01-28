@@ -1,5 +1,6 @@
 import { Loader } from 'resource-loader';
 import bunnyUrl from './assets/bunny.png';
+import visitorFontUrl from './assets/fonts/visitor/visitor1.ttf';
 import { getResolution } from './lib/screen';
 
 const GAME_WIDTH = 384;
@@ -44,90 +45,95 @@ resize();
 
 window.addEventListener('resize', resize);
 
-loader.add(bunnyUrl).load((loader, resources) => {
-  const bunnyResource = resources[bunnyUrl];
+loader
+  .add(bunnyUrl)
+  .add(visitorFontUrl)
+  .load(async (loader, resources) => {
+    const font = new FontFace('Visitor', `url(${visitorFontUrl})`);
+    const visitorFont = await font.load();
+    document.fonts.add(visitorFont);
+    const bunnyResource = resources[bunnyUrl];
 
-  if (bunnyResource == null) {
-    throw new Error(`Could not load ${bunnyUrl}`);
-  }
-
-  const bunny = {
-    pos: {
-      x: bunnyResource.data.width / 2,
-      y: canvas.height / 2 - bunnyResource.data.height / 2,
-    },
-    dir: {
-      x: 1,
-      y: 0,
-    },
-    lastPos: {
-      x: bunnyResource.data.width / 2,
-      y: canvas.height / 2 - bunnyResource.data.height / 2,
-    },
-    vel: {
-      x: 20,
-      y: 0,
-    },
-    sprite: bunnyResource.data as HTMLImageElement,
-  };
-
-  const TARGET_FPS = 60;
-  const STEP = 1000 / TARGET_FPS;
-  let last = performance.now();
-  let dt = 0;
-
-  function frame(hrt: DOMHighResTimeStamp) {
-    dt += Math.min(1000, hrt - last);
-
-    while (dt >= STEP) {
-      bunny.lastPos.x = bunny.pos.x;
-      bunny.lastPos.y = bunny.pos.y;
-      bunny.pos.x += (bunny.vel.x / STEP) * bunny.dir.x;
-      bunny.pos.y += (bunny.vel.y / STEP) * bunny.dir.y;
-
-      if (bunny.pos.x + bunny.sprite.width >= GAME_WIDTH) {
-        bunny.pos.x = GAME_WIDTH - bunny.sprite.width;
-        bunny.dir.x *= -1;
-      } else if (bunny.pos.x <= 0) {
-        bunny.pos.x = 0;
-        bunny.dir.x *= -1;
-      }
-
-      dt -= STEP;
+    if (bunnyResource == null) {
+      throw new Error(`Could not load ${bunnyUrl}`);
     }
 
-    const interpolationPercentage = dt / STEP;
+    const bunny = {
+      pos: {
+        x: bunnyResource.data.width / 2,
+        y: canvas.height / 2 - bunnyResource.data.height / 2,
+      },
+      dir: {
+        x: 1,
+        y: 1,
+      },
+      lastPos: {
+        x: bunnyResource.data.width / 2,
+        y: canvas.height / 2 - bunnyResource.data.height / 2,
+      },
+      vel: {
+        x: 20,
+        y: 20,
+      },
+      sprite: bunnyResource.data as HTMLImageElement,
+    };
 
-    const x =
-      bunny.lastPos.x +
-      (bunny.pos.x - bunny.lastPos.x) * interpolationPercentage;
-    const y =
-      bunny.lastPos.y +
-      (bunny.pos.y - bunny.lastPos.y) * interpolationPercentage;
+    const TARGET_FPS = 60;
+    const STEP = 1000 / TARGET_FPS;
+    let last = performance.now();
+    let dt = 0;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(20 - 0.5, 0);
-    ctx.lineTo(20 - 0.5, GAME_HEIGHT);
-    ctx.moveTo(40 - 0.5, 0);
-    ctx.lineTo(40 - 0.5, GAME_HEIGHT);
-    ctx.moveTo(60 - 0.5, 0);
-    ctx.lineTo(60 - 0.5, GAME_HEIGHT);
-    ctx.moveTo(80 - 0.5, 0);
-    ctx.lineTo(80 - 0.5, GAME_HEIGHT);
-    ctx.stroke();
+    function frame(hrt: DOMHighResTimeStamp) {
+      dt += Math.min(1000, hrt - last);
 
-    ctx.translate(x | 0, y | 0);
+      while (dt >= STEP) {
+        bunny.lastPos.x = bunny.pos.x;
+        bunny.lastPos.y = bunny.pos.y;
+        bunny.pos.x += bunny.vel.x * (STEP / 1000) * bunny.dir.x;
+        bunny.pos.y += bunny.vel.y * (STEP / 1000) * bunny.dir.y;
 
-    ctx.drawImage(bunny.sprite, 0, 0);
+        if (bunny.pos.x + bunny.sprite.width >= GAME_WIDTH) {
+          bunny.pos.x = GAME_WIDTH - bunny.sprite.width;
+          bunny.dir.x *= -1;
+        } else if (bunny.pos.x <= 0) {
+          bunny.pos.x = 0;
+          bunny.dir.x *= -1;
+        }
 
-    ctx.setTransform(IDENTITY_MATRIX);
+        if (bunny.pos.y + bunny.sprite.height >= GAME_HEIGHT) {
+          bunny.pos.y = GAME_HEIGHT - bunny.sprite.height;
+          bunny.dir.y *= -1;
+        } else if (bunny.pos.y <= 0) {
+          bunny.pos.y = 0;
+          bunny.dir.y *= -1;
+        }
 
-    last = hrt;
+        dt -= STEP;
+      }
+
+      const interpolationPercentage = dt / STEP;
+
+      const x =
+        bunny.lastPos.x +
+        (bunny.pos.x - bunny.lastPos.x) * interpolationPercentage;
+      const y =
+        bunny.lastPos.y +
+        (bunny.pos.y - bunny.lastPos.y) * interpolationPercentage;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'white';
+      ctx.font = '10px Visitor';
+
+      ctx.setTransform(1, 0, 0, 1, x, y);
+
+      ctx.drawImage(bunny.sprite, 0, 0);
+
+      ctx.setTransform(IDENTITY_MATRIX);
+
+      last = hrt;
+      requestAnimationFrame(frame);
+    }
+
     requestAnimationFrame(frame);
-  }
-
-  requestAnimationFrame(frame);
-});
+  });
