@@ -1,6 +1,6 @@
-import MainLoop from 'mainloop.js';
 import { Loader } from 'resource-loader';
 import bunnyUrl from './assets/bunny.png';
+import visitorFontUrl from './assets/fonts/visitor/visitor1.ttf';
 import { getResolution } from './lib/screen';
 
 const GAME_WIDTH = 384;
@@ -45,7 +45,11 @@ resize();
 
 window.addEventListener('resize', resize);
 
-loader.add(bunnyUrl).load((loader, resources) => {
+loader.add(bunnyUrl).load(async (loader, resources) => {
+  const font = new FontFace('Visitor', `url(${visitorFontUrl})`);
+  const visitorFont = await font.load();
+  document.fonts.add(visitorFont);
+
   const bunnyResource = resources[bunnyUrl];
 
   if (bunnyResource == null) {
@@ -68,9 +72,11 @@ loader.add(bunnyUrl).load((loader, resources) => {
     sprite: bunnyResource.data as HTMLImageElement,
   };
 
-  let FRAME_RATE = 1000 / 60;
-  let STEP = FRAME_RATE / 1000;
+  const FRAME_RATE = 1000 / 60;
+  const STEP = 1 / 60;
+  let currentFrame = 0;
   let lastFrame = 0;
+  let dt = 0;
   let startTime: number;
 
   console.log({
@@ -79,40 +85,46 @@ loader.add(bunnyUrl).load((loader, resources) => {
   });
 
   function frame(hrt: DOMHighResTimeStamp) {
-    let dt = 0;
+    dt = 0;
 
     if (startTime == null) {
       startTime = hrt;
     }
 
-    const currentFrame = Math.round((hrt - startTime) / FRAME_RATE);
+    currentFrame = Math.round((hrt - startTime) / FRAME_RATE);
     dt = (currentFrame - lastFrame) * FRAME_RATE;
 
-    bunny.pos.x += bunny.vel.x * STEP * bunny.dir.x;
-    bunny.pos.y += bunny.vel.y * STEP * bunny.dir.y;
+    if (dt > 0) {
+      bunny.pos.x += bunny.vel.x * STEP * bunny.dir.x;
+      bunny.pos.y += bunny.vel.y * STEP * bunny.dir.y;
 
-    if (bunny.pos.x + bunny.sprite.width >= GAME_WIDTH) {
-      bunny.pos.x = GAME_WIDTH - bunny.sprite.width;
-      bunny.dir.x *= -1;
-    } else if (bunny.pos.x <= 0) {
-      bunny.pos.x = 0;
-      bunny.dir.x *= -1;
-    }
+      if (bunny.pos.x + bunny.sprite.width >= GAME_WIDTH) {
+        bunny.pos.x = GAME_WIDTH - bunny.sprite.width;
+        bunny.dir.x *= -1;
+      } else if (bunny.pos.x <= 0) {
+        bunny.pos.x = 0;
+        bunny.dir.x *= -1;
+      }
 
-    if (bunny.pos.y + bunny.sprite.height >= GAME_HEIGHT) {
-      bunny.pos.y = GAME_HEIGHT - bunny.sprite.height;
-      bunny.dir.y *= -1;
-    } else if (bunny.pos.y <= 0) {
-      bunny.pos.y = 0;
-      bunny.dir.y *= -1;
+      if (bunny.pos.y + bunny.sprite.height >= GAME_HEIGHT) {
+        bunny.pos.y = GAME_HEIGHT - bunny.sprite.height;
+        bunny.dir.y *= -1;
+      } else if (bunny.pos.y <= 0) {
+        bunny.pos.y = 0;
+        bunny.dir.y *= -1;
+      }
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.translate(Math.round(bunny.pos.x), Math.round(bunny.pos.y));
-    // ctx.translate(bunny.pos.x, bunny.pos.y);
 
     ctx.drawImage(bunny.sprite, 0, 0);
+
+    ctx.fillStyle = 'white';
+    ctx.font = '10px Visitor';
+
+    ctx.resetTransform();
 
     ctx.setTransform(IDENTITY_MATRIX);
 
