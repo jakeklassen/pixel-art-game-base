@@ -1,3 +1,4 @@
+import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { Loader } from 'resource-loader';
 import bunnyUrl from './assets/bunny.png';
