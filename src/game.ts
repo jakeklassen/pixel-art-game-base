@@ -54,29 +54,42 @@ loader.add(bunnyUrl).load((loader, resources) => {
 
   const bunny = {
     pos: {
-      x: bunnyResource.data.width / 2,
+      x: 100,
       y: canvas.height / 2 - bunnyResource.data.height / 2,
     },
     dir: {
       x: 1,
-      y: 0,
-    },
-    lastPos: {
-      x: bunnyResource.data.width / 2,
-      y: canvas.height / 2 - bunnyResource.data.height / 2,
+      y: 1,
     },
     vel: {
       x: 20,
-      y: 0,
+      y: 20,
     },
     sprite: bunnyResource.data as HTMLImageElement,
   };
 
-  MainLoop.setUpdate((dt: number) => {
-    bunny.lastPos.x = bunny.pos.x;
-    bunny.lastPos.y = bunny.pos.y;
-    bunny.pos.x += (bunny.vel.x / dt) * bunny.dir.x;
-    bunny.pos.y += (bunny.vel.y / dt) * bunny.dir.y;
+  const FRAME_RATE = 1000 / 144;
+  const STEP = FRAME_RATE / 1000;
+  let lastFrame = 0;
+  let startTime: number;
+
+  console.log({
+    FRAME_RATE,
+    STEP,
+  });
+
+  function frame(hrt: DOMHighResTimeStamp) {
+    let dt = 0;
+
+    if (startTime == null) {
+      startTime = hrt;
+    }
+
+    const currentFrame = Math.round((hrt - startTime) / FRAME_RATE);
+    dt = (currentFrame - lastFrame) * FRAME_RATE;
+
+    bunny.pos.x += bunny.vel.x * STEP * bunny.dir.x;
+    bunny.pos.y += bunny.vel.y * STEP * bunny.dir.y;
 
     if (bunny.pos.x + bunny.sprite.width >= GAME_WIDTH) {
       bunny.pos.x = GAME_WIDTH - bunny.sprite.width;
@@ -85,34 +98,39 @@ loader.add(bunnyUrl).load((loader, resources) => {
       bunny.pos.x = 0;
       bunny.dir.x *= -1;
     }
-  })
-    .setDraw((interpolationPercentage: number) => {
-      const x =
-        bunny.lastPos.x +
-        (bunny.pos.x - bunny.lastPos.x) * interpolationPercentage;
-      const y =
-        bunny.lastPos.y +
-        (bunny.pos.y - bunny.lastPos.y) * interpolationPercentage;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = 'red';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(20 - 0.5, 0);
-      ctx.lineTo(20 - 0.5, GAME_HEIGHT);
-      ctx.moveTo(40 - 0.5, 0);
-      ctx.lineTo(40 - 0.5, GAME_HEIGHT);
-      ctx.moveTo(60 - 0.5, 0);
-      ctx.lineTo(60 - 0.5, GAME_HEIGHT);
-      ctx.moveTo(80 - 0.5, 0);
-      ctx.lineTo(80 - 0.5, GAME_HEIGHT);
-      ctx.stroke();
+    if (bunny.pos.y + bunny.sprite.height >= GAME_HEIGHT) {
+      bunny.pos.y = GAME_HEIGHT - bunny.sprite.height;
+      bunny.dir.y *= -1;
+    } else if (bunny.pos.y <= 0) {
+      bunny.pos.y = 0;
+      bunny.dir.y *= -1;
+    }
 
-      ctx.translate(x | 0, y | 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(20 - 0.5, 0);
+    ctx.lineTo(20 - 0.5, GAME_HEIGHT);
+    ctx.moveTo(40 - 0.5, 0);
+    ctx.lineTo(40 - 0.5, GAME_HEIGHT);
+    ctx.moveTo(60 - 0.5, 0);
+    ctx.lineTo(60 - 0.5, GAME_HEIGHT);
+    ctx.moveTo(80 - 0.5, 0);
+    ctx.lineTo(80 - 0.5, GAME_HEIGHT);
+    ctx.stroke();
 
-      ctx.drawImage(bunny.sprite, 0, 0);
+    ctx.translate(Math.round(bunny.pos.x), Math.round(bunny.pos.y));
+    // ctx.translate(bunny.pos.x, bunny.pos.y);
 
-      ctx.setTransform(IDENTITY_MATRIX);
-    })
-    .start();
+    ctx.drawImage(bunny.sprite, 0, 0);
+
+    ctx.setTransform(IDENTITY_MATRIX);
+
+    lastFrame = currentFrame;
+    requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
 });
