@@ -63,7 +63,7 @@ loader
     const bunny = {
       pos: {
         x: bunnyResource.data.width / 2,
-        y: Math.round(canvas.height / 2 - bunnyResource.data.height / 2),
+        y: canvas.height / 2 - bunnyResource.data.height / 2,
       },
       dir: {
         x: 1,
@@ -79,16 +79,16 @@ loader
     const TARGET_FPS = 60;
     const STEP = 1000 / TARGET_FPS;
     let last = performance.now();
-    let dt = 0;
+    let deltaTimeAccumulator = 0;
 
     function frame(hrt: DOMHighResTimeStamp) {
-      dt += Math.min(1000, hrt - last);
+      deltaTimeAccumulator += Math.min(1000, hrt - last);
 
-      while (dt >= STEP) {
-        const delta = STEP / 1000;
+      while (deltaTimeAccumulator >= STEP) {
+        const dt = STEP / 1000;
 
-        bunny.pos.x += bunny.vel.x * delta * bunny.dir.x;
-        bunny.pos.y += bunny.vel.y * delta * bunny.dir.y;
+        bunny.pos.x += bunny.vel.x * dt * bunny.dir.x;
+        bunny.pos.y += bunny.vel.y * dt * bunny.dir.y;
 
         if (bunny.pos.x + bunny.sprite.width >= GAME_WIDTH) {
           bunny.pos.x = GAME_WIDTH - bunny.sprite.width;
@@ -106,7 +106,7 @@ loader
           bunny.dir.y *= -1;
         }
 
-        dt -= STEP;
+        deltaTimeAccumulator -= STEP;
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -114,7 +114,14 @@ loader
       ctx.fillStyle = 'white';
       ctx.font = '10px Visitor';
 
-      ctx.setTransform(1, 0, 0, 1, bunny.pos.x, bunny.pos.y);
+      ctx.setTransform(
+        1,
+        0,
+        0,
+        1,
+        Math.round(bunny.pos.x),
+        Math.round(bunny.pos.y),
+      );
 
       ctx.drawImage(bunny.sprite, 0, 0);
 
