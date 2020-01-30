@@ -61,19 +61,15 @@ loader
     const bunny = {
       pos: {
         x: bunnyResource.data.width / 2,
-        y: canvas.height / 2 - bunnyResource.data.height / 2,
+        y: Math.round(canvas.height / 2 - bunnyResource.data.height / 2),
       },
       dir: {
         x: 1,
         y: 1,
       },
-      lastPos: {
-        x: bunnyResource.data.width / 2,
-        y: canvas.height / 2 - bunnyResource.data.height / 2,
-      },
       vel: {
-        x: 20,
-        y: 20,
+        x: 60,
+        y: 60,
       },
       sprite: bunnyResource.data as HTMLImageElement,
     };
@@ -87,10 +83,10 @@ loader
       dt += Math.min(1000, hrt - last);
 
       while (dt >= STEP) {
-        bunny.lastPos.x = bunny.pos.x;
-        bunny.lastPos.y = bunny.pos.y;
-        bunny.pos.x += bunny.vel.x * (STEP / 1000) * bunny.dir.x;
-        bunny.pos.y += bunny.vel.y * (STEP / 1000) * bunny.dir.y;
+        const delta = STEP / 1000;
+
+        bunny.pos.x += bunny.vel.x * delta * bunny.dir.x;
+        bunny.pos.y += bunny.vel.y * delta * bunny.dir.y;
 
         if (bunny.pos.x + bunny.sprite.width >= GAME_WIDTH) {
           bunny.pos.x = GAME_WIDTH - bunny.sprite.width;
@@ -111,21 +107,12 @@ loader
         dt -= STEP;
       }
 
-      const interpolationPercentage = dt / STEP;
-
-      const x =
-        bunny.lastPos.x +
-        (bunny.pos.x - bunny.lastPos.x) * interpolationPercentage;
-      const y =
-        bunny.lastPos.y +
-        (bunny.pos.y - bunny.lastPos.y) * interpolationPercentage;
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       ctx.fillStyle = 'white';
       ctx.font = '10px Visitor';
 
-      ctx.setTransform(1, 0, 0, 1, x, y);
+      ctx.setTransform(1, 0, 0, 1, bunny.pos.x, bunny.pos.y);
 
       ctx.drawImage(bunny.sprite, 0, 0);
 
