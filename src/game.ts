@@ -68,8 +68,8 @@ loader.add(bunnyUrl).load(async (loader, resources) => {
       y: 1,
     },
     vel: {
-      x: 30,
-      y: 30,
+      x: 20,
+      y: 20,
     },
     sprite: bunnyResource.data as HTMLImageElement,
   };
@@ -90,10 +90,10 @@ loader.add(bunnyUrl).load(async (loader, resources) => {
     dt = 0;
 
     if (startTime == null) {
-      startTime = hrt - 5;
+      startTime = hrt;
     }
 
-    currentFrame = Math.floor((hrt - startTime) / FRAME_RATE);
+    currentFrame = Math.round((hrt - startTime) / FRAME_RATE);
     dt = (currentFrame - lastFrame) * FRAME_RATE;
 
     if (dt > 0) {
