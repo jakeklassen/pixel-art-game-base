@@ -2,6 +2,8 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { Loader } from 'resource-loader';
 import bunnyUrl from './assets/bunny.png';
+import megamanUrl from './assets/megaman.png';
+import mapUrl from './assets/map.png';
 import visitorFontUrl from './assets/fonts/visitor/visitor1.ttf';
 import { getResolution } from './lib/screen';
 
@@ -49,21 +51,21 @@ window.addEventListener('resize', resize);
 
 loader
   .add(bunnyUrl)
+  .add(megamanUrl)
+  .add(mapUrl)
   .add(visitorFontUrl)
   .load(async (loader, resources) => {
     const font = new FontFace('Visitor', `url(${visitorFontUrl})`);
     const visitorFont = await font.load();
     document.fonts.add(visitorFont);
-    const bunnyResource = resources[bunnyUrl];
+    const bunnyResource = resources[bunnyUrl]!;
+    const playerResource = resources[megamanUrl]!;
+    const mapResource = resources[mapUrl]!;
 
-    if (bunnyResource == null) {
-      throw new Error(`Could not load ${bunnyUrl}`);
-    }
-
-    const bunny = {
+    const player = {
       pos: {
-        x: bunnyResource.data.width / 2,
-        y: canvas.height / 2 - bunnyResource.data.height / 2,
+        x: playerResource.data.width / 2,
+        y: canvas.height / 2 - playerResource.data.height / 2,
       },
       dir: {
         x: 1,
@@ -73,7 +75,7 @@ loader
         x: 60,
         y: 60,
       },
-      sprite: bunnyResource.data as HTMLImageElement,
+      sprite: playerResource.data as HTMLImageElement,
     };
 
     const TARGET_FPS = 60;
@@ -87,29 +89,33 @@ loader
       while (deltaTimeAccumulator >= STEP) {
         const dt = STEP / 1000;
 
-        bunny.pos.x += bunny.vel.x * dt * bunny.dir.x;
-        bunny.pos.y += bunny.vel.y * dt * bunny.dir.y;
+        player.pos.x += player.vel.x * dt * player.dir.x;
+        player.pos.y += player.vel.y * dt * player.dir.y;
 
-        if (bunny.pos.x + bunny.sprite.width >= GAME_WIDTH) {
-          bunny.pos.x = GAME_WIDTH - bunny.sprite.width;
-          bunny.dir.x *= -1;
-        } else if (bunny.pos.x <= 0) {
-          bunny.pos.x = 0;
-          bunny.dir.x *= -1;
+        if (player.pos.x + player.sprite.width >= GAME_WIDTH) {
+          player.pos.x = GAME_WIDTH - player.sprite.width;
+          player.dir.x *= -1;
+        } else if (player.pos.x <= 0) {
+          player.pos.x = 0;
+          player.dir.x *= -1;
         }
 
-        if (bunny.pos.y + bunny.sprite.height >= GAME_HEIGHT) {
-          bunny.pos.y = GAME_HEIGHT - bunny.sprite.height;
-          bunny.dir.y *= -1;
-        } else if (bunny.pos.y <= 0) {
-          bunny.pos.y = 0;
-          bunny.dir.y *= -1;
+        if (player.pos.y + player.sprite.height >= GAME_HEIGHT) {
+          player.pos.y = GAME_HEIGHT - player.sprite.height;
+          player.dir.y *= -1;
+        } else if (player.pos.y <= 0) {
+          player.pos.y = 0;
+          player.dir.y *= -1;
         }
 
         deltaTimeAccumulator -= STEP;
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.setTransform(IDENTITY_MATRIX);
+
+      ctx.drawImage(mapResource.data, 0, 0);
 
       ctx.fillStyle = 'white';
       ctx.font = '10px Visitor';
@@ -119,11 +125,11 @@ loader
         0,
         0,
         1,
-        Math.round(bunny.pos.x),
-        Math.round(bunny.pos.y),
+        Math.round(player.pos.x),
+        Math.round(player.pos.y),
       );
 
-      ctx.drawImage(bunny.sprite, 0, 0);
+      ctx.drawImage(player.sprite, 0, 0);
 
       ctx.setTransform(IDENTITY_MATRIX);
 
