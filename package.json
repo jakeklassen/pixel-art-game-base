@@ -3,16 +3,19 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
+    "prebuild": "rimraf dist",
     "build": "parcel build --no-cache index.html",
     "start": "parcel --no-cache index.html"
   },
   "devDependencies": {
+    "@babel/core": "^7.8.3",
     "@types/mainloop.js": "^1.0.5",
     "parcel": "^2.0.0-alpha.3.2",
+    "regenerator-runtime": "^0.13.3",
+    "rimraf": "^3.0.1",
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "mainloop.js": "^1.0.4",
     "resource-loader": "^4.0.0-rc3"
   }
 }
