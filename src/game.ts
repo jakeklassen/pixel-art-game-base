@@ -120,14 +120,7 @@ loader
       ctx.fillStyle = 'white';
       ctx.font = '10px Visitor';
 
-      ctx.setTransform(
-        1,
-        0,
-        0,
-        1,
-        Math.round(player.pos.x),
-        Math.round(player.pos.y),
-      );
+      ctx.setTransform(1, 0, 0, 1, player.pos.x | 0, player.pos.y | 0);
 
       ctx.drawImage(player.sprite, 0, 0);
 
