@@ -487,7 +487,7 @@ const resize = () => {
   canvas.style.left = `${innerWidth / 2 - canvas.width / 2}px`;
   canvas.style.top = `${innerHeight / 2 - canvas.height / 2}px`;
 };
-resize();
+// resize();
 // window.addEventListener('resize', resize);
 loader.add(_urlAssetsBunnyPngDefault.default).add(_urlAssetsMegamanPngDefault.default).add(_urlAssetsMapPngDefault.default).add(_urlAssetsFontsVisitorVisitor1TtfDefault.default).load(async (loader, resources) => {
   const font = new FontFace('Visitor', `url(${_urlAssetsFontsVisitorVisitor1TtfDefault.default})`);

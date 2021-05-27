@@ -50,7 +50,7 @@ const resize = () => {
   canvas.style.top = `${innerHeight / 2 - canvas.height / 2}px`;
 };
 
-resize();
+// resize();
 
 // window.addEventListener('resize', resize);
 
