@@ -8,11 +8,14 @@
     "start": "parcel --no-cache index.html"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-0",
+    "@parcel/transformer-image": "2.0.0-beta.2",
     "@types/mainloop.js": "^1.0.5",
-    "parcel": "^1.12.4",
+    "parcel": "^2.0.0-beta.2",
+    "postcss": "^8.2.1",
     "regenerator-runtime": "^0.13.5",
     "rimraf": "^3.0.1",
-    "typescript": "^3.7.4"
+    "typescript": "^4.3.2"
   },
   "dependencies": {
     "core-js": "^3.6.5",

@@ -1,14 +1,17 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 import { Loader } from 'resource-loader';
-import bunnyUrl from './assets/bunny.png';
-import megamanUrl from './assets/megaman.png';
-import mapUrl from './assets/map.png';
-import visitorFontUrl from './assets/fonts/visitor/visitor1.ttf';
+import bunnyUrl from 'url:./assets/bunny.png';
+import megamanUrl from 'url:./assets/megaman.png';
+import mapUrl from 'url:./assets/map.png';
+import visitorFontUrl from 'url:./assets/fonts/visitor/visitor1.ttf';
 import { getResolution } from './lib/screen';
 
-const GAME_WIDTH = 384;
-const GAME_HEIGHT = 216;
+const GAME_WIDTH = 384 * 2;
+const GAME_HEIGHT = 216 * 2;
+
+const SRC_GAME_WIDTH = 384;
+const SRC_GAME_HEIGHT = 216;
+
+let gameScale = 1;
 
 const loader = new Loader();
 
@@ -22,10 +25,10 @@ canvas.style.width = `${GAME_WIDTH}px`;
 canvas.style.height = `${GAME_HEIGHT}px`;
 
 export const IDENTITY_MATRIX: DOMMatrix2DInit = {
-  a: 1,
+  a: 2,
   b: 0,
   c: 0,
-  d: 1,
+  d: 2,
   e: 0,
   f: 0,
 };
@@ -40,6 +43,8 @@ const resize = () => {
     GAME_HEIGHT,
   );
 
+  gameScale = factor;
+
   canvas.style.transform = `scale(${factor})`;
   canvas.style.left = `${innerWidth / 2 - canvas.width / 2}px`;
   canvas.style.top = `${innerHeight / 2 - canvas.height / 2}px`;
@@ -47,7 +52,7 @@ const resize = () => {
 
 resize();
 
-window.addEventListener('resize', resize);
+// window.addEventListener('resize', resize);
 
 loader
   .add(bunnyUrl)
@@ -72,8 +77,8 @@ loader
         y: 1,
       },
       vel: {
-        x: 60,
-        y: 60,
+        x: 60 * 2,
+        y: 60 * 2,
       },
       sprite: playerResource.data as HTMLImageElement,
     };
@@ -86,29 +91,25 @@ loader
     function frame(hrt: DOMHighResTimeStamp) {
       deltaTimeAccumulator += Math.min(1000, hrt - last);
 
-      while (deltaTimeAccumulator >= STEP) {
-        const dt = STEP / 1000;
+      const dt = Math.min(1000, hrt - last) / 1000;
 
-        player.pos.x += player.vel.x * dt * player.dir.x;
-        player.pos.y += player.vel.y * dt * player.dir.y;
+      player.pos.x += player.vel.x * dt * player.dir.x;
+      player.pos.y += player.vel.y * dt * player.dir.y;
 
-        if (player.pos.x + player.sprite.width >= GAME_WIDTH) {
-          player.pos.x = GAME_WIDTH - player.sprite.width;
-          player.dir.x *= -1;
-        } else if (player.pos.x <= 0) {
-          player.pos.x = 0;
-          player.dir.x *= -1;
-        }
+      if (player.pos.x + player.sprite.width * 2 >= GAME_WIDTH) {
+        player.pos.x = GAME_WIDTH - player.sprite.width * 2;
+        player.dir.x *= -1;
+      } else if (player.pos.x <= 0) {
+        player.pos.x = 0;
+        player.dir.x *= -1;
+      }
 
-        if (player.pos.y + player.sprite.height >= GAME_HEIGHT) {
-          player.pos.y = GAME_HEIGHT - player.sprite.height;
-          player.dir.y *= -1;
-        } else if (player.pos.y <= 0) {
-          player.pos.y = 0;
-          player.dir.y *= -1;
-        }
-
-        deltaTimeAccumulator -= STEP;
+      if (player.pos.y + player.sprite.height * 2 >= GAME_HEIGHT) {
+        player.pos.y = GAME_HEIGHT - player.sprite.height * 2;
+        player.dir.y *= -1;
+      } else if (player.pos.y <= 0) {
+        player.pos.y = 0;
+        player.dir.y *= -1;
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -120,7 +121,7 @@ loader
       ctx.fillStyle = 'white';
       ctx.font = '10px Visitor';
 
-      ctx.setTransform(1, 0, 0, 1, player.pos.x | 0, player.pos.y | 0);
+      ctx.setTransform(2, 0, 0, 2, player.pos.x, player.pos.y);
 
       ctx.drawImage(player.sprite, 0, 0);
 
