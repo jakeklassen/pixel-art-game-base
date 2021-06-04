@@ -1,8 +1,8 @@
 import { Loader } from 'resource-loader';
 import bunnyUrl from 'url:./assets/bunny.png';
-import megamanUrl from 'url:./assets/megaman.png';
-import mapUrl from 'url:./assets/map.png';
 import visitorFontUrl from 'url:./assets/fonts/visitor/visitor1.ttf';
+import mapUrl from 'url:./assets/map.png';
+import megamanUrl from 'url:./assets/megaman.png';
 import { getResolution } from './lib/screen';
 
 const GAME_WIDTH = 384 * 2;
