@@ -102,5 +102,5 @@ public/
 
 # App
 
-# dist/ # temporary until netlify can work with parcel 2.x
+dist/
 src/assets/exclude
