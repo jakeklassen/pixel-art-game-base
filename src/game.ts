@@ -10,7 +10,7 @@ const GAME_HEIGHT = 216;
 
 const loader = new Loader();
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+const canvas = document.querySelector<HTMLCanvasElement>('#canvas')!;
 const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
 canvas.width = GAME_WIDTH;
