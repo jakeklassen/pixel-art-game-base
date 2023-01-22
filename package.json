@@ -1,0 +1,19 @@
+{
+  "name": "pixel-art-game-base",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/css-font-loading-module": "^0.0.7",
+    "typescript": "^4.9.3",
+    "vite": "^4.0.0"
+  },
+  "dependencies": {
+    "resource-loader": "4.0.0-rc4"
+  }
+}
