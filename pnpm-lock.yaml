@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@types/css-font-loading-module': ^0.0.7
+  '@types/css-font-loading-module': ^0.0.8
   resource-loader: 4.0.0-rc4
   typescript: ^4.9.3
   vite: ^4.0.0
@@ -10,7 +10,7 @@ dependencies:
   resource-loader: 4.0.0-rc4
 
 devDependencies:
-  '@types/css-font-loading-module': 0.0.7
+  '@types/css-font-loading-module': 0.0.8
   typescript: 4.9.4
   vite: 4.0.4
 
@@ -214,8 +214,8 @@ packages:
     dev: true
     optional: true
 
-  /@types/css-font-loading-module/0.0.7:
-    resolution: {integrity: sha512-nl09VhutdjINdWyXxHWN/w9zlNCfr60JUqJbd24YXUuCwgeL0TpFSdElCwb6cxfB6ybE19Gjj4g0jsgkXxKv1Q==}
+  /@types/css-font-loading-module/0.0.8:
+    resolution: {integrity: sha512-PdJeLlCJj/ShOA+c0dXdZ/e1P0Cdjhip+dRBtPaigOqwKd0DiFx3NeO6T2E7AQ5JszSR3dub3YkQjc2hcQyxSw==}
     dev: true
 
   /esbuild/0.16.17:
