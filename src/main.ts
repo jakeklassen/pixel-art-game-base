@@ -3,7 +3,7 @@ import bunnyUrl from './assets/bunny.png';
 import visitorFontUrl from './assets/fonts/visitor/visitor1.ttf';
 import mapUrl from './assets/map.png';
 import megamanUrl from './assets/megaman.png';
-import { getResolution } from './lib/screen';
+import { getResolution } from './lib/screen.ts';
 
 const GAME_WIDTH = 384;
 const GAME_HEIGHT = 216;
